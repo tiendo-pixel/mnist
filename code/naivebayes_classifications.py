@@ -78,7 +78,11 @@ print(f"Training data shape: {X_train.shape}, Training labels shape: {y_train.sh
 print(f"Testing data shape: {X_test.shape}, Testing labels shape: {y_test.shape}")
 
 def accuracy_score(y_true, y_pred):
-    # Calculate the accuracy score as the ratio of correctly predicted samples to total samples
+    """
+    Calculate the accuracy score as the ratio of correctly predicted samples to total samples
+    - Formula: Accuracy = Number of correct predictions / Total number of samples.
+    - Returns: A float value between 0.0 (worst) and 1.0 (perfect classification).
+    """
     y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
     return float(np.mean(y_true == y_pred))
 
@@ -101,15 +105,16 @@ def precision_score(y_true, y_pred, average: str = "macro"):
 
 def recall_score(y_true, y_pred, average: str = "macro"):
     """
-    Calculate the recall score as the ratio of true positives to the sum of true positives and false negatives
+    Calculate the recall score as the ratio of true positives to the sum of true positives and false negativ    - y_true: Ground truth (correct) target values or labels.
+    - y_pred: Estimated target labels returned by the classifier.
     """
     y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
     classes = np.unique(y_true) if average == "macro" else [1]
-
     recall = []
     for cls in classes:
         true_positives = np.sum((y_true == cls) & (y_pred == cls))
         false_negatives = np.sum((y_true == cls) & (y_pred != cls))
+
         # Handle zero division by returning 0 if there are no positive instances
         recall.append(true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0)
     return np.mean(recall) if average == "macro" else recall[0]
@@ -117,6 +122,8 @@ def recall_score(y_true, y_pred, average: str = "macro"):
 def f1_score(y_true, y_pred, average: str = "macro"):
     """
     Calculate the F1 score as the harmonic mean of precision and recall
+    - Formula: F1 = 2 * (Precision * Recall) / (Precision + Recall)
+    - Returns: A float score in range [0.0, 1.0] reflecting the model's ability to find all positive instances.
     """
     y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
     classes = np.unique(y_true) if average == "macro" else [1]
@@ -130,26 +137,36 @@ def f1_score(y_true, y_pred, average: str = "macro"):
     return np.mean(f1_scores) if average == "macro" else f1_scores[0]
 
 def classification_report(y_true, y_pred):
-    # Generate a classification report containing precision, recall, and F1 score for each class
+    """
+    Build a comprehensive text report showing the main classification metrics for each class.
+    - Parameters: y_true (actual labels) and y_pred (predicted labels) of equal length.
+    - Returns: A formatted string summarizing precision, recall, f1-score, and support (sample count) per class.
+    """
     classes = np.unique(y_true)
     report = {}
+    total_support = 0
     for cls in classes:
+        # Calculate the total support (number of true instances for each class)
+        total_support = np.sum(1 for cls in y_true if cls == cls)
+
+        # Show the precision, recall and F1 score for each class in the report
         report[cls] = {
             "precision": precision_score(y_true, y_pred, average=None),
             "recall": recall_score(y_true, y_pred, average=None),
-            "f1-score": f1_score(y_true, y_pred, average=None)
+            "f1-score": f1_score(y_true, y_pred, average=None),
+            "support" : total_support
         }
+        total_support += total_support
     return report
 
 def roc_auc_curve(y_true, y_pred):
     return
-
 class NaiveBayes():
     def __init__(self):
         self.class_priors = None
         self.likelihoods = None
         self.classes = None
-
+    
     def predict():
         return
 
